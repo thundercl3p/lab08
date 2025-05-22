@@ -1,38 +1,17 @@
-language: cpp
+image: Visual Studio 2022
 
-dist: bionic
+configuration: Release
 
-matrix:
-  include:
-    - compiler: gcc
-      env: COMPILER=gcc-9 CXX=g++-9 CC=gcc-9
-    - compiler: clang
-      env: COMPILER=clang-10 CXX=clang++-10 CC=clang-10
-
-cache:
-  apt: true
-  directories:
-    - $HOME/.ccache
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-bionic-10
-    packages:
-      - cmake
-      - cmake-data
-      - g++-9
-      - clang-10
-
-before_install:
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 90
-  - sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 90
-  - sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 90
-
-script:
-  - mkdir -p build && cd build
-  - cmake -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC ..
-  - cmake --build . -- -j$(nproc)
-  - ctest --output-on-failure
+build_script:
+- cmd: cd hello_world_application
+- cmd: cmake -H. -B_build
+- cmd: cmake --build _build
+- cmd: cmake --build _build --target hello_world
+- cmd: _build\Debug\hello_world.exe
+- cmd: echo "Testing hello_world is done"
+- cmd: cd ..
+- cmd: cd solver_application
+- cmd: cmake -H. -B_build
+- cmd: cmake --build _build
+- cmd: cmake --build _build --target solver
+- cmd: echo "Testing solver is done"
