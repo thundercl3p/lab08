@@ -1,17 +1,26 @@
-image: Visual Studio 2022
+name: Build Project
 
-configuration: Release
+on:
+  push:
+    branches: [ "main" ]  
+  pull_request:
+    branches: [ "main" ] 
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest 
+    
+    steps:
+    - uses: actions/checkout@v4 
 
-build_script:
-- cmd: cd hello_world_application
-- cmd: cmake -H. -B_build
-- cmd: cmake --build _build
-- cmd: cmake --build _build --target hello_world
-- cmd: _build\Debug\hello_world.exe
-- cmd: echo "Testing hello_world is done"
-- cmd: cd ..
-- cmd: cd solver_application
-- cmd: cmake -H. -B_build
-- cmd: cmake --build _build
-- cmd: cmake --build _build --target solver
-- cmd: echo "Testing solver is done"
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake  
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
