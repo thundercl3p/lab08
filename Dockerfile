@@ -5,7 +5,6 @@ RUN apt update && apt install -yy gcc g++ cmake
 COPY . /app
 WORKDIR /app
 
-# Удаляем старый кэш, если он есть
 RUN rm -rf _build
 
 RUN cmake -H. -B_build -DCMAKE_BUILD_TYPE=Release && \
