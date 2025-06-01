@@ -25,7 +25,7 @@ jobs:
         run:  cmake --build _build
       - name: checking programs output
         run:  |
-          echo "1 -5  6" | _build/solver_application/solver_app
+          echo "1 -5  6" | _build/solver_application/solver
           _build/hello_world_application/hello
       - name: Docker
         run: |
