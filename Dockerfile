@@ -14,4 +14,4 @@ ENV LOG_PATH=/home/logs/log.txt
 VOLUME /home/logs
 
 WORKDIR _build/hello_world_application
-ENTRYPOINT ./hello_world
+ENTRYPOINT ./hello
