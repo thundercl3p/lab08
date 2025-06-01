@@ -1,26 +1,37 @@
-name: Build Project
+name: Continuous Integration for Homework
 
-on:
-  push:
-    branches: [ "main" ]  
-  pull_request:
-    branches: [ "main" ] 
-    
+on: [push, pull_request]
+
 jobs:
-  build:
-    runs-on: ubuntu-latest 
-    
+  linux_build:
+    name: Build and Test on Ubuntu
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compilers:
+          - { cpp: "g++", c: "gcc" }
+          - { cpp: "clang++", c: "clang" }
+
     steps:
-    - uses: actions/checkout@v4 
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake  
+      - name: Configure CMake
+        run: cmake -H. -B_build -DCMAKE_CXX_COMPILER=${{matrix.compilers.cpp}} -DCMAKE_C_COMPILER=${{matrix.compilers.c}}
 
-    - name: Build
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-        make
+      - name: Build Project
+        run: cmake --build _build
+
+      - name: Test Applications
+        run: |
+          echo "1 -5 6" | _build/solver_application/solver_app
+          _build/hello_world_application/hello
+
+      - name: Build and Run Docker
+        run: |
+          docker build -t test .
+          docker run test
+
+      - name: Display Job Status
+        run: echo "Job status: ${{ job.status }}"
