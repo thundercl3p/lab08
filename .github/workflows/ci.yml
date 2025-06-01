@@ -1,37 +1,35 @@
-name: Continuous Integration for Homework
+name: CI workflow for homework
 
-on: [push, pull_request]
+on:
+  [push, pull_request]
 
 jobs:
-  linux_build:
-    name: Build and Test on Ubuntu
+  build_on_linux:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        compilers:
-          - { cpp: "g++", c: "gcc" }
-          - { cpp: "clang++", c: "clang" }
+        include:
+          - cpp_comp: g++
+            c_comp: gcc
+          - cpp_comp: clang++
+            c_comp: clang
 
     steps:
-      - name: Checkout Repository
+      - name: checking out repository
         uses: actions/checkout@v4
 
-      - name: Configure CMake
-        run: cmake -H. -B_build -DCMAKE_CXX_COMPILER=${{matrix.compilers.cpp}} -DCMAKE_C_COMPILER=${{matrix.compilers.c}}
-
-      - name: Build Project
-        run: cmake --build _build
-
-      - name: Test Applications
-        run: |
-          echo "1 -5 6" | _build/solver_application/solver_app
+      - name: preparing build
+        run:  cmake -H. -B_build -D CMAKE_CXX_COMPILER=${{matrix.cpp_comp}} -D CMAKE_C_COMPILER=${{matrix.c_comp}} 
+      - name: building
+        run:  cmake --build _build
+      - name: checking programs output
+        run:  |
+          echo "1 -5  6" | _build/solver_application/solver_app
           _build/hello_world_application/hello
-
-      - name: Build and Run Docker
+      - name: Docker
         run: |
           docker build -t test .
           docker run test
-
-      - name: Display Job Status
-        run: echo "Job status: ${{ job.status }}"
+      - name: status info
+        run: echo ${{ job.status }} is status of job
